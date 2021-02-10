@@ -42,7 +42,7 @@ check_arch() {
 }
 
 check_dependencies() {
-	[ "${ALPINE_NO_RECACHE}" ] || {
+	[ "${ALPINE_NO_RECACHE:-}" ] || {
 		info %s '* updating apt cache...'
 		apt update
 		nl
@@ -264,7 +264,7 @@ install|'')
 	;;
 
 *)
-	printf '%s\n' \
+	info '%s\n' \
 		"'sh ${0} rm' to unintsall alpine from defasult path" \
 		"'sh ${0} info' to see this path " \
 		"you can also edit it in file: [$(readlink -e "${0}")]" \
