@@ -2,19 +2,19 @@
 set -ue
 
 case "${1:-}" in
-	xfce*)
-		DE=xfce4
-		CMD=/usr/bin/startxfce4
-		;;
-	openbox*|'')
-		DE=openbox
-		CMD=/usr/bin/openbox
-		;;
-	i3*)
-		DE=i3wm
-		CMD=/usr/bin/i3
-		;;
-	*)
+xfce*)
+	set -- xfce4
+	CMD=/usr/bin/startxfce4
+	;;
+openbox*|'')
+	set -- openbox
+	CMD=/usr/bin/openbox
+	;;
+i3*)
+	set -- i3wm i3status
+	CMD=/usr/bin/i3
+	;;
+*)
 	printf '%s\n' \
 		'chose from:' \
 		'  * openbox [default]' \
@@ -22,12 +22,16 @@ case "${1:-}" in
 		'  * i3' \
 		'' \
 		"${0##*/} {openbox|xfce|i3}"
-		exit 0
-		;;
+	exit 0
+	;;
 esac
 
 echo 'installing packages...'
-apk add xvfb x11vnc "${DE}" xfce4-terminal faenza-icon-theme supervisor
+apk add \
+	supervisor \
+	xvfb x11vnc \
+	"${@}" xfce4-terminal \
+	faenza-icon-theme ttf-liberation
 
 
 cat << EOF >/etc/supervisord.conf
@@ -65,7 +69,7 @@ priority=300
 user=root
 EOF
 
-cat << EOF install -Dm 755 /usr/local/bin/startvnc
+cat << EOF | install -Dm 755 /proc/self/fd/0 /usr/local/bin/startvnc
 #!/bin/sh --
 set -ue
 
