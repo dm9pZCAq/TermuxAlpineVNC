@@ -251,7 +251,7 @@ eval "exec ${ERR_FD}>&2"
 
 case "${1:-}" in
 uninstall|rm|del*)
-	rm -rvif -- "${ALPINE_FS}" "${BIN:?}/${LAUNCH}"
+	rm -rf -- "${ALPINE_FS}" "${BIN:?}/${LAUNCH}"
 	info '%s\n' 'done'
 	;;
 
