@@ -178,8 +178,9 @@ create_launcher() {
 
 	ALPINE_FS="${ALPINE_FS}"
 
-	args="\${*}"
-	set -- proot -0 \\
+	argc="\${#}"
+	set -- "\${@}" \\
+	    proot -0 \\
 	    -b /mnt \\
 	    -b /dev \\
 	    -b /proc \\
@@ -201,7 +202,15 @@ create_launcher() {
 	    TERM="\${TERM}" \\
 	    sh -ec "\${init}" sh
 
-	[ "\${args}" ] && exec "\${@}" -c "\${args}"
+	[ "\${argc}" -gt 0 ] && {
+	    set -- "\${@}" -c
+	    while [ "\${argc}" -gt 0 ]; do
+	        arg="\${1}"; shift
+	        set -- "\${@}" "\${arg}"
+	        : "\$(( argc -= 1 ))"
+	    done
+	    exec "\${@}"
+	}
 	exec "\${@}" --login
 	EOM
 }
